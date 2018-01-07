@@ -23,7 +23,7 @@ if [[ $# -gt 1 ]];
 then
     LIST_OF_FILE_PATH="${2}"
 else
-    LIST_OF_FILE_PATH="list_of_mp3_file"
+    LIST_OF_FILE_PATH="list_of_file"
 fi
 
 if [[ $# -gt 2 ]];
@@ -33,7 +33,7 @@ else
     NUMBER_OF_FILES_TO_TRY=80
 fi
 
-if [[ !-f "${LIST_OF_FILE_PATH}" ]];
+if [[ ! -f "${LIST_OF_FILE_PATH}" ]];
 then
     echo ":: Invalid file path provided!"
     echo "   ${LIST_OF_FILE_PATH} does not exist."

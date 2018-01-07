@@ -12,13 +12,19 @@ A real world scenario and the reason to code this is to fill up an usb stick wit
 # Future Improvements
 
 * Create a changelog.md
+* Put both scripts into one script
 * Run the copy script until the device is full or an fixed amout of files are copied (use output of df -i?)
 * Extend the "create_file_list.sh" script with following optional arguments
-    * --filter-by-extension
-    * --output-file-path
-    * --help
+    * -d|--dry-run
+    * -f|--filter-by-extension
+    * -g|--guided
+    * -h|--help
+    * -p|--output-file-path
 * Extend the "copy_random_files_from_list.sh" script with the following optional arguments
-    * --destination-path
-    * --maximum-amount-of-files
-    * --diskspace-left
-    * --help
+    * -d|--dry-run
+    * -f|--maximum-amount-of-files
+    * -g|--guided
+    * -h|--help
+    * -p|--destination-path
+    * -s|--diskspace-left
+* Rewrite in another language to release fils for windows/bsd/linux/mac
