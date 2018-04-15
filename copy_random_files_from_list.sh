@@ -23,7 +23,7 @@ if [[ $# -gt 1 ]];
 then
     LIST_OF_FILE_PATH="${2}"
 else
-    LIST_OF_FILE_PATH="list_of_file"
+    LIST_OF_FILE_PATH="file.list"
 fi
 
 if [[ $# -gt 2 ]];
@@ -41,17 +41,20 @@ then
     exit 1
 fi
 
+echo ":: Using >>${LIST_OF_FILE_PATH}<< as source."
+echo ":: Filling up mount pount >>${MOUNT_PONT}<<".
+
 #choose randome list of file
 declare -a LIST_OF_FILE
 #LIST_OF_FILE=( $(shuf -n 80 ${LIST_OF_FILE_PATH}) )
 
 SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
-for f in $(shuf -n ${NUMBER_OF_FILES_TO_TRY} ${LIST_OF_FILE_PATH})
+for CURRENT_FILE_PATH in $(shuf -n ${NUMBER_OF_FILES_TO_TRY} ${LIST_OF_FILE_PATH})
 do
-    LIST_OF_FILE+=( "$f" )
+    LIST_OF_FILE+=( "${CURRENT_FILE_PATH}" )
 done
-IFS=$SAVEIFS
+IFS=${SAVEIFS}
 
 #SIZE = du -s ${PATH}
 #AVERAGE_FILE_SIZE=SIZE/NUMBER_OF_FILES_IN_TOTAL
@@ -62,14 +65,19 @@ IFS=$SAVEIFS
 #   for each of the last files, check if the file size is lss than the current existing free space on the destination device
 
 #echo "deleting empty files"
+echo ":: Deleting empty files in >>${MOUNT_PONT}<<."
 find ${MOUNT_PONT} -type f -empty -delete
+
+echo ":: Trying to copy >>${#LIST_OF_FILE[@]}<< files."
 
 for FILE_PATH in "${LIST_OF_FILE[@]}";
 do
     #echo "${FILE_PATH}"
     #cp -v "${FILE_PATH}" /mnt/
-    if [[ -f "${FILE_PATH}" ]];
+    #echo "cp -v \"${FILE_PATH}\" ${MOUNT_PONT}/"
+    if [[ -e "${FILE_PATH}" ]];
     then
+        #echo "   >>${FILE_PATH}<< is a file."
         #echo "cp ${FILE_PATH}" ${MOUNT_PONT}/
         cp "${FILE_PATH}" ${MOUNT_PONT}/
     fi

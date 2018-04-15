@@ -21,11 +21,15 @@ if [[ $# -gt 1 ]];
 then
     LIST_OF_FILE_NAME="${2}"
 else
-    LIST_OF_FILE_NAME="list_of_file"
+    LIST_OF_FILE_NAME="file.list"
 fi
+
+echo ":: Search in path >>${PATH_TO_SEARCH_IN}<<."
+echo ":: Creating >>${LIST_OF_FILE_NAME}<<."
 
 if [[ -f ${LIST_OF_FILE_NAME} ]];
 then
+    echo ":: >>${LIST_OF_FILE_NAME}<< exists, overwriting it ..."
     rm ${LIST_OF_FILE_NAME}
     touch ${LIST_OF_FILE_NAME}
 fi
@@ -36,6 +40,8 @@ then
 else
     FILE_EXTENSION_TO_SEARCH_FOR="mp3"
 fi
+
+echo ":: Search for files with extension >>${FILE_EXTENSION_TO_SEARCH_FOR}<<."
 
 ##not working
 #shopt -s nullglob
@@ -69,4 +75,7 @@ find ${PATH_TO_SEARCH_IN} -iname *.${FILE_EXTENSION_TO_SEARCH_FOR} -type f -exec
 #    fi
 #done;
 
-echo "\"${LIST_OF_FILE_NAME}\" created"
+NUMBER_OF_ENTRIES=$( cat ${LIST_OF_FILE_NAME} | wc -l );
+
+echo ":: >>${LIST_OF_FILE_NAME}<< created."
+echo "   Containing >>${NUMBER_OF_ENTRIES}<< entries."
