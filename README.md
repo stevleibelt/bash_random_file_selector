@@ -15,16 +15,12 @@ A real world scenario and the reason to code this is to fill up an usb stick wit
 * Put both scripts into one script
 * Run the copy script until the device is full or an fixed amout of files are copied (use output of df -i?)
 * Extend the "create_file_list.sh" script with following optional arguments
-    * -d|--dry-run
     * -f|--filter-by-extension
     * -g|--guided
-    * -h|--help
     * -p|--output-file-path
 * Extend the "copy_random_files_from_list.sh" script with the following optional arguments
-    * -d|--dry-run
     * -f|--maximum-amount-of-files
     * -g|--guided
-    * -h|--help
     * -p|--destination-path
     * -s|--diskspace-left
-* Rewrite in another language to release fils for windows/bsd/linux/mac
+* Rewrite in another language to release files for windows/bsd/linux/mac
