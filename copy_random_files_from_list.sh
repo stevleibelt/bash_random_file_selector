@@ -3,6 +3,10 @@
 # [@param] - string:destination path (default is /mnt)
 # [@param] - string:name of the file (default is "list_of_file"
 # [@param] - int:number of files to chose randomly (default is 80)
+####
+# @todo
+#   * check if destionation path is writeable
+#   * check, for the first file to copy, if we could copy the file
 #
 # @link https://stackoverflow.com/questions/301039/how-can-i-escape-white-space-in-a-bash-loop-list
 # @link https://stackoverflow.com/questions/4928738/shell-script-copy-and-paste-a-random-file-from-a-directory#4928994
