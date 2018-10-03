@@ -12,37 +12,85 @@
 # @since 2017-08-24
 ####
 
-if [[ $# -gt 0 ]];
-then
-    MOUNT_PONT="${1}"
-else
-    MOUNT_PONT="/mnt"
-fi
+##begin of user input
+IS_DRY_RUN=0
+LEVEL_OF_VERBOSITY=0
+SHOW_HELP=0
+USE_THE_FORCE=0
 
-if [[ $# -gt 1 ]];
-then
-    LIST_OF_FILE_PATH="${2}"
-else
-    LIST_OF_FILE_PATH="file.list"
-fi
+while true;
+do
+    case "${1}" in
+        -d)
+            IS_DRY_RUN=1
+            shift
+            ;;
+        -f)
+            USE_THE_FORCE=1
+            shift
+            ;;
+        -h)
+            SHOW_HELP=1
+            shift
+            ;;
+        -v)
+            LEVEL_OF_VERBOSITY=1
+            shift
+            ;;
+        -vv)
+            LEVEL_OF_VERBOSITY=2
+            shift
+            ;;
+        -vvv)
+            LEVEL_OF_VERBOSITY=3
+            shift
+            ;;
+         *)
+            break
+            ;;
+    esac
+done
 
-if [[ $# -gt 2 ]];
-then
-    NUMBER_OF_FILES_TO_TRY="${3}"
-else
-    NUMBER_OF_FILES_TO_TRY=80
-fi
+LIST_OF_FILE_PATH=${2:-'file.list'}
+DESTINATION_PATH=${1:-'/mnt'}
+NUMBER_OF_FILES_TO_TRY=${3:-80}
+##end of user input
 
+##begin of help
+if [[ ${SHOW_HELP} -eq 1 ]];
+then
+    echo ":: Usage"
+    echo "   ${BASH_SOURCE[0]} [-d] [-f] [-h] [-v|-vv|-vvv] [<destination_path>] [<path_to_the_source_list>] [<number_of_files_to_choose>]"
+    echo ""
+    echo "  -d      - Dry run"
+    echo "  -f      - Force"
+    echo "  -h      - Show this help"
+    echo "  -v      - Be verbose"
+    echo "  -vv     - Be more verbose"
+    echo "  -vvv    - Be most verbose"
+
+    exit 0
+fi
+##end of help
+
+##begin of validation
 if [[ ! -f "${LIST_OF_FILE_PATH}" ]];
 then
-    echo ":: Invalid file path provided!"
-    echo "   ${LIST_OF_FILE_PATH} does not exist."
+    if [[ ${USE_THE_FORCE} -eq 0 ]];
+    then
+        echo ":: Invalid file path provided!"
+        echo "   ${LIST_OF_FILE_PATH} does not exist."
 
-    exit 1
+        exit 1
+    fi
 fi
+##end of validation
 
-echo ":: Using >>${LIST_OF_FILE_PATH}<< as source."
-echo ":: Filling up mount pount >>${MOUNT_PONT}<<".
+if [[ ${LEVEL_OF_VERBOSITY} -gt 0 ]];
+then
+    echo ":: Using >>${LIST_OF_FILE_PATH}<< as source."
+    echo ":: Filling up destination path >>${DESTINATION_PATH}<<".
+fi
 
 #choose randome list of file
 declare -a LIST_OF_FILE
@@ -52,6 +100,10 @@ SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
 for CURRENT_FILE_PATH in $(shuf -n ${NUMBER_OF_FILES_TO_TRY} ${LIST_OF_FILE_PATH})
 do
+    if [[ ${LEVEL_OF_VERBOSITY} -gt 2 ]];
+    then
+        echo "   Adding >>${CURRENT_FILE_PATH}<<"
+    fi
     LIST_OF_FILE+=( "${CURRENT_FILE_PATH}" )
 done
 IFS=${SAVEIFS}
@@ -65,26 +117,56 @@ IFS=${SAVEIFS}
 #   for each of the last files, check if the file size is lss than the current existing free space on the destination device
 
 #echo "deleting empty files"
-echo ":: Deleting empty files in >>${MOUNT_PONT}<<."
-find ${MOUNT_PONT} -type f -empty -delete
+if [[ ${LEVEL_OF_VERBOSITY} -gt 0 ]];
+then
+    echo ":: Deleting empty files in >>${DESTINATION_PATH}<<."
+fi
+find ${DESTINATION_PATH} -type f -empty -delete
 
-echo ":: Trying to copy >>${#LIST_OF_FILE[@]}<< files."
+if [[ ${LEVEL_OF_VERBOSITY} -gt 0 ]];
+then
+    echo ":: Trying to copy >>${#LIST_OF_FILE[@]}<< files."
+fi
 
 for FILE_PATH in "${LIST_OF_FILE[@]}";
 do
-    #echo "${FILE_PATH}"
+    if [[ ${LEVEL_OF_VERBOSITY} -gt 3 ]];
+    then
+        echo "   File path >>${FILE_PATH}<<"
+    fi
     #cp -v "${FILE_PATH}" /mnt/
-    #echo "cp -v \"${FILE_PATH}\" ${MOUNT_PONT}/"
+    #echo "cp -v \"${FILE_PATH}\" ${DESTINATION_PATH}/"
+    if [[ ${LEVEL_OF_VERBOSITY} -gt 3 ]];
+    then
+        ls -l "${FILE_PATH}"
+    fi
     if [[ -e "${FILE_PATH}" ]];
     then
-        #echo "   >>${FILE_PATH}<< is a file."
-        #echo "cp ${FILE_PATH}" ${MOUNT_PONT}/
-        cp "${FILE_PATH}" ${MOUNT_PONT}/
+        if [[ ${LEVEL_OF_VERBOSITY} -gt 2 ]];
+        then
+            echo "   >>${FILE_PATH}<< is a file."
+        fi
+        if [[ ${LEVEL_OF_VERBOSITY} -gt 3 ]];
+        then
+            echo "   cp ${FILE_PATH}" ${DESTINATION_PATH}/
+        fi
+        cp "${FILE_PATH}" ${DESTINATION_PATH}/
     fi
 done;
 
+if [[ ${LEVEL_OF_VERBOSITY} -gt 1 ]];
+then
+    echo "   Synchronizing file system."
+fi
 sync
 
-find ${MOUNT_PONT} -type f -empty -delete
+if [[ ${LEVEL_OF_VERBOSITY} -gt 2 ]];
+then
+    echo ":: Deleting empty files."
+fi
+find ${DESTINATION_PATH} -type f -empty -delete
 
-du -sh ${MOUNT_PONT}/
+if [[ ${LEVEL_OF_VERBOSITY} -gt 1 ]];
+then
+    du -sh ${DESTINATION_PATH}/
+fi
