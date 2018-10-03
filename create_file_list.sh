@@ -1,6 +1,7 @@
 #!/bin/bash
 ####
 # creates a list of mp3 files.
+####
 #
 # [@param] - string:path to search in (default is current working directory)
 # [@param] - string:name of the file (default is "list_of_file"
@@ -10,38 +11,91 @@
 # @since 2017-08-24
 ####
 
-if [[ $# -gt 0 ]];
-then
-    PATH_TO_SEARCH_IN="${1}"
-else
-    PATH_TO_SEARCH_IN="."
-fi
+##begin of user input
+IS_DRY_RUN=0
+LEVEL_OF_VERBOSITY=0
+SHOW_HELP=0
+USE_THE_FORCE=0
 
-if [[ $# -gt 1 ]];
-then
-    LIST_OF_FILE_NAME="${2}"
-else
-    LIST_OF_FILE_NAME="file.list"
-fi
+while true;
+do
+    case "${1}" in
+        -d)
+            IS_DRY_RUN=1
+            shift
+            ;;
+        -f)
+            USE_THE_FORCE=1
+            shift
+            ;;
+        -h)
+            SHOW_HELP=1
+            shift
+            ;;
+        -v)
+            LEVEL_OF_VERBOSITY=1
+            shift
+            ;;
+        -vv)
+            LEVEL_OF_VERBOSITY=2
+            shift
+            ;;
+        -vvv)
+            LEVEL_OF_VERBOSITY=3
+            shift
+            ;;
+         *)
+            break
+            ;;
+    esac
+done
 
-echo ":: Search in path >>${PATH_TO_SEARCH_IN}<<."
-echo ":: Creating >>${LIST_OF_FILE_NAME}<<."
+FILE_EXTENSION_TO_SEARCH_FOR=${3:-'mp3'}
+LIST_OF_FILE_PATH=${2:-'file.list'}
+PATH_TO_SEARCH_IN=${1:-'.'}
+##end of user input
+
+##begin of help
+if [[ ${SHOW_HELP} -eq 1 ]];
+then
+    echo ":: Usage"
+    echo "   ${BASH_SOURCE[0]} [-d] [-f] [-h] [-v|-vv|-vvv] [<source_path>] [<path_to_the_source_list>] [<file_extension_to_filter_for>]"
+    echo ""
+    echo "  -d      - Dry run"
+    echo "  -f      - Force"
+    echo "  -h      - Show this help"
+    echo "  -v      - Be verbose"
+    echo "  -vv     - Be more verbose"
+
+    exit 0
+fi
+##end of help
 
 if [[ -f ${LIST_OF_FILE_NAME} ]];
 then
-    echo ":: >>${LIST_OF_FILE_NAME}<< exists, overwriting it ..."
-    rm ${LIST_OF_FILE_NAME}
-    touch ${LIST_OF_FILE_NAME}
+    if [[ ${USE_THE_FORCE} -eq 0 ]];
+    then
+        if [[ ${LEVEL_OF_VERBOSITY} -gt 0 ]];
+        then
+            echo ":: >>${LIST_OF_FILE_NAME}<< exists, overwriting it ..."
+        fi
+
+        rm ${LIST_OF_FILE_NAME}
+        touch ${LIST_OF_FILE_NAME}
+    else
+        echo ":: Destination file exists."
+        echo "   Stop working."
+
+        exit 1
+    fi
 fi
 
-if [[ $# -gt 2 ]];
+if [[ ${LEVEL_OF_VERBOSITY} -gt 0 ]];
 then
-    FILE_EXTENSION_TO_SEARCH_FOR="${3}"
-else
-    FILE_EXTENSION_TO_SEARCH_FOR="mp3"
+    echo ":: Search in path >>${PATH_TO_SEARCH_IN}<<."
+    echo ":: Creating >>${LIST_OF_FILE_NAME}<<."
+    echo ":: Search for files with extension >>${FILE_EXTENSION_TO_SEARCH_FOR}<<."
 fi
-
-echo ":: Search for files with extension >>${FILE_EXTENSION_TO_SEARCH_FOR}<<."
 
 ##not working
 #shopt -s nullglob
@@ -77,5 +131,8 @@ find ${PATH_TO_SEARCH_IN} -iname *.${FILE_EXTENSION_TO_SEARCH_FOR} -type f -exec
 
 NUMBER_OF_ENTRIES=$( cat ${LIST_OF_FILE_NAME} | wc -l );
 
-echo ":: >>${LIST_OF_FILE_NAME}<< created."
-echo "   Containing >>${NUMBER_OF_ENTRIES}<< entries."
+if [[ ${LEVEL_OF_VERBOSITY} -gt 0 ]];
+then
+    echo ":: >>${LIST_OF_FILE_NAME}<< created."
+    echo "   Containing >>${NUMBER_OF_ENTRIES}<< entries."
+fi
