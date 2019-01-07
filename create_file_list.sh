@@ -51,7 +51,7 @@ do
 done
 
 FILE_EXTENSION_TO_SEARCH_FOR=${3:-'mp3'}
-LIST_OF_FILE_PATH=${2:-'file.list'}
+LIST_OF_FILE_NAME=${2:-'file.list'}
 PATH_TO_SEARCH_IN=${1:-'.'}
 ##end of user input
 
