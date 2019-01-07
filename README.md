@@ -14,6 +14,10 @@ A real world scenario and the reason to code this is to fill up an usb stick wit
 * Create a changelog.md
 * Put both scripts into one script
 * Run the copy script until the device is full or an fixed amout of files are copied (use output of df -i?)
+* If write permission is not set
+    * create a tempoary directory using >>mktemp -d<<
+    * add entries until size of the target is reached
+    * copy all stuff from tempoary directory to target using sudo
 * Extend the "create_file_list.sh" script with following optional arguments
     * -f|--filter-by-extension
     * -g|--guided
