@@ -11,6 +11,7 @@ A real world scenario and the reason to code this is to fill up an usb stick wit
 
 # Future Improvements
 
+* Create a configuration file to ease up the copy command (default could be the source path file and the number of files)
 * Create a changelog.md
 * Put both scripts into one script
 * Run the copy script until the device is full or an fixed amout of files are copied (use output of df -i?)
