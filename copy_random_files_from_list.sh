@@ -16,6 +16,24 @@
 # @since 2017-08-24
 ####
 
+##begin of function
+####
+# @param <string:path>
+# @return 0 for yes, 1 for no
+####
+function check_if_free_disk_space_is_left ()
+{
+    local FREE_DISK_SPACE=$(df --output=avail "${1}" | tail -n +2)
+
+    if [[ ${FREE_DISK_SPACE} -lt 100 ]];
+    then
+        return 1
+    fi
+
+    return 0
+}
+##end of function
+
 ##begin of user input
 IS_DRY_RUN=0
 LEVEL_OF_VERBOSITY=0
@@ -57,7 +75,7 @@ done
 
 LIST_OF_FILE_PATH=${2:-'file.list'}
 DESTINATION_PATH=${1:-'/mnt'}
-NUMBER_OF_FILES_TO_TRY=${3:-80}
+NUMBER_OF_FILES_TO_TRY=${3:-666}
 ##end of user input
 
 ##begin of help
@@ -87,6 +105,16 @@ then
 
         exit 1
     fi
+fi
+
+check_if_free_disk_space_is_left "${DESTINATION_PATH}"
+
+if [[ $? -gt 0 ]];
+then
+    echo ":: No space left."
+    echo "   There is not enough free disk space on ${DESTINATION_PATH}"
+
+    exit 2
 fi
 ##end of validation
 
@@ -132,6 +160,8 @@ then
     echo ":: Trying to copy >>${#LIST_OF_FILE[@]}<< files."
 fi
 
+CURRENT_NUMBER_OF_COPIED_FILES=0
+
 for FILE_PATH in "${LIST_OF_FILE[@]}";
 do
     if [[ ${LEVEL_OF_VERBOSITY} -gt 3 ]];
@@ -155,6 +185,29 @@ do
             echo "   cp ${FILE_PATH}" ${DESTINATION_PATH}/
         fi
         cp "${FILE_PATH}" ${DESTINATION_PATH}/
+
+        CURRENT_NUMBER_OF_COPIED_FILES=$(calc ${CURRENT_NUMBER_OF_COPIED_FILES} + 1)
+
+        if [[ $(calc ${CURRENT_NUMBER_OF_COPIED_FILES}) -eq 10 ]];
+        then
+            if [[ ${LEVEL_OF_VERBOSITY} -gt 2 ]];
+            then
+                echo "   Checking free disk space for >>${FILE_PATH}<<."
+            fi
+
+            check_if_free_disk_space_is_left "${FILE_PATH}"
+
+            #if function exit status is greater 0, something is not ok
+            if [[ $? -gt 0 ]];
+            then
+                if [[ ${LEVEL_OF_VERBOSITY} -gt 1 ]];
+                then
+                    echo "   There is no space left on >>${FILE_PATH}<< stoping copy job."
+                fi
+
+                break
+            fi
+        fi
     fi
 done;
 
