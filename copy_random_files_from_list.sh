@@ -188,21 +188,21 @@ do
 
         CURRENT_NUMBER_OF_COPIED_FILES=$(calc ${CURRENT_NUMBER_OF_COPIED_FILES} + 1)
 
-        if [[ $(calc ${CURRENT_NUMBER_OF_COPIED_FILES}) -eq 10 ]];
+        if [[ $(calc ${CURRENT_NUMBER_OF_COPIED_FILES} % 10) -eq 0 ]];
         then
             if [[ ${LEVEL_OF_VERBOSITY} -gt 2 ]];
             then
                 echo "   Checking free disk space for >>${FILE_PATH}<<."
             fi
 
-            check_if_free_disk_space_is_left "${FILE_PATH}"
+            check_if_free_disk_space_is_left "${DESTINATION_PATH}"
 
             #if function exit status is greater 0, something is not ok
             if [[ $? -gt 0 ]];
             then
                 if [[ ${LEVEL_OF_VERBOSITY} -gt 1 ]];
                 then
-                    echo "   There is no space left on >>${FILE_PATH}<< stoping copy job."
+                    echo "   There is no space left on >>${DESTINATION_PATH}<< stoping copy job."
                 fi
 
                 break
