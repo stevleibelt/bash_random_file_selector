@@ -34,14 +34,17 @@ do
             ;;
         -v)
             LEVEL_OF_VERBOSITY=1
+            echo "   Verbose Level set to be verbose"
             shift
             ;;
         -vv)
             LEVEL_OF_VERBOSITY=2
+            echo "   Verbose Level set to be very verbose"
             shift
             ;;
         -vvv)
             LEVEL_OF_VERBOSITY=3
+            echo "   Verbose Level set to be very very verbose"
             shift
             ;;
          *)
