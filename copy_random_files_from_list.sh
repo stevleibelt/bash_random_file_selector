@@ -174,6 +174,7 @@ do
     then
         ls -l "${FILE_PATH}"
     fi
+
     if [[ -e "${FILE_PATH}" ]];
     then
         if [[ ${LEVEL_OF_VERBOSITY} -gt 2 ]];
@@ -208,6 +209,12 @@ do
                 break
             fi
         fi
+    fi
+
+
+    if [[ ${LEVEL_OF_VERBOSITY} -gt 1 ]];
+    then
+        echo "Progress: ( ${CURRENT_NUMBER_OF_COPIED_FILES} / ${NUMBER_OF_FILES_TO_TRY} )"
     fi
 done;
 
