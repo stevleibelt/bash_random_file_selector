@@ -11,6 +11,12 @@ A real world scenario and the reason to code this is to fill up an usb stick wit
 
 # Future Improvements
 
+* Check free disk space before the start
+    * Sum up the used file size and check if it can be copied on the file before doing it
+    * Available disk space: `du -s <path>`
+    * Sum up the size for all files: `ls -l <path> | awk '{ total += $5 }; END { print total }
+* Maybe add file size to the generated file list
+    * Benefit of this, we can configure a "max file size" (which kind of is a max run time)
 * Create a configuration file to ease up the copy command (default could be the source path file and the number of files)
 * Create a changelog.md
 * Put both scripts into one script
