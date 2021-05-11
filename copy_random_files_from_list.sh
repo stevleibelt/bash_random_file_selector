@@ -214,7 +214,7 @@ do
 
     if [[ ${LEVEL_OF_VERBOSITY} -gt 1 ]];
     then
-        echo "Progress: ( ${CURRENT_NUMBER_OF_COPIED_FILES} / ${NUMBER_OF_FILES_TO_TRY} )"
+        echo "   Progress: ( ${CURRENT_NUMBER_OF_COPIED_FILES} / ${NUMBER_OF_FILES_TO_TRY} )"
     fi
 done;
 
