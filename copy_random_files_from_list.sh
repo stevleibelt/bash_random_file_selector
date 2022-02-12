@@ -35,6 +35,7 @@ function check_if_free_disk_space_is_left ()
 ##end of function
 
 ##begin of user input
+CLEANUP_DESTINATION_FIRST=0
 IS_DRY_RUN=0
 LEVEL_OF_VERBOSITY=0
 SHOW_HELP=0
@@ -43,6 +44,10 @@ USE_THE_FORCE=0
 while true;
 do
     case "${1}" in
+        -c)
+            CLEANUP_DESTINATION_FIRST=1
+            shift
+            ;;
         -d)
             IS_DRY_RUN=1
             shift
@@ -82,8 +87,9 @@ NUMBER_OF_FILES_TO_TRY=${3:-666}
 if [[ ${SHOW_HELP} -eq 1 ]];
 then
     echo ":: Usage"
-    echo "   ${BASH_SOURCE[0]} [-d] [-f] [-h] [-v|-vv|-vvv] [<destination_path>] [<path_to_the_source_list>] [<number_of_files_to_choose>]"
+    echo "   ${BASH_SOURCE[0]} [-c] [-d] [-f] [-h] [-v|-vv|-vvv] [<destination_path>] [<path_to_the_source_list>] [<number_of_files_to_choose>]"
     echo ""
+    echo "  -c      - Cleanup destination before copy (remove all files)"
     echo "  -d      - Dry run"
     echo "  -f      - Force"
     echo "  -h      - Show this help"
@@ -96,6 +102,11 @@ fi
 ##end of help
 
 ##begin of validation
+if [[ ${DESTINATION_PATH: -1} == "/" ]];
+then
+    DESTINATION_PATH="${DESTINATION_PATH:0:-1}"
+fi
+
 if [[ ! -f "${LIST_OF_FILE_PATH}" ]];
 then
     if [[ ${USE_THE_FORCE} -eq 0 ]];
@@ -105,6 +116,13 @@ then
 
         exit 1
     fi
+fi
+
+if [[ ${CLEANUP_DESTINATION_FIRST} -eq 1 ]];
+then
+    echo ":: Cleaning up destination first."
+
+    rm -fr ${DESTINATION_PATH}/*
 fi
 
 check_if_free_disk_space_is_left "${DESTINATION_PATH}"
