@@ -230,6 +230,16 @@ do
     fi
 
 
+    if [[ ${LEVEL_OF_VERBOSITY} -eq 1 && ${CURRENT_NUMBER_OF_COPIED_FILES} -gt 0 ]];
+    then
+        if [[ $(calc ${CURRENT_NUMBER_OF_COPIED_FILES} % 80 ) -eq 0 ]];
+        then
+            echo "."
+        else
+            echo -n "."
+        fi
+    fi
+
     if [[ ${LEVEL_OF_VERBOSITY} -gt 1 ]];
     then
         echo "   Progress: ( ${CURRENT_NUMBER_OF_COPIED_FILES} / ${NUMBER_OF_FILES_TO_TRY} )"
